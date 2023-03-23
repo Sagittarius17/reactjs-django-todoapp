@@ -1,25 +1,23 @@
-import logo from './logo.svg';
 import './App.css';
+import { Navbar, Footer } from './components'
 
-function App() {
+const App = () => {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Navbar />
+      <Footer />
     </div>
   );
 }
+// const cursor = document.querySelector('#cursor');
 
-export default App;
+// const moveCursor = (e)=> {
+//   const mouseY = e.clientY;
+//   const mouseX = e.clientX;
+   
+//   cursor.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0)`;
+ 
+// }
+
+// window.addEventListener('mousemove', moveCursor)
+export default App
