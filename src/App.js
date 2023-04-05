@@ -1,4 +1,4 @@
-import { Navbar, Welcome, Footer, Transactions, Services } from "./components";
+import { Navbar, Welcome, Footer, Services } from "./components";
 
 // import { BG } from './assets/background.png'
 
