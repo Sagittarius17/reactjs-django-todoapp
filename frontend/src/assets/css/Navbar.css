@@ -1,0 +1,42 @@
+/* Navbar styles */
+nav {
+    background-color: #5d5d65;
+    padding: 1rem 0;
+    position: fixed;
+    width: 100%;
+}
+
+.nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 2rem;
+}
+
+.brand {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.nav-links {
+    display: none;
+    gap: 1rem;
+}
+
+.nav-links a:hover {
+    color: #93C5FD;
+}
+
+a {
+    color: #ffffff;
+}
+
+
+/* Responsive styles */
+@media (min-width: 768px) {
+    .nav-links {
+        display: flex;
+    }
+}

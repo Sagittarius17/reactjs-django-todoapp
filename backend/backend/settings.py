@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-(i&63epsxcashg(*_@$_&wn5^b2qfsie7l%ra3x+2u=m$w%#30
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '192.168.1.6', '127.0.0.1']
 
 
 # Application definition
@@ -40,13 +40,28 @@ INSTALLED_APPS = [
     'todo_app',
     'rest_framework',
     'corsheaders',
+    'channels',
 ]
+
+# Channel layer settings
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],
+        },
+    },
+}
 
 # Allow all origins (not recommended for production)
 CORS_ALLOW_ALL_ORIGINS = True
 
 # OR, you can specifically whitelist the frontend's domain:
-# CORS_ALLOWED_ORIGINS = ["http://localhost:3000"]
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://192.168.1.6:3000",
+    "http://127.0.0.1:3000",
+]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -79,6 +94,8 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'backend.wsgi.application'
 
+# Use channels layer as default backend for `asgi` routing.
+ASGI_APPLICATION = 'backend.routing.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
