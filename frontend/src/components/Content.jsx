@@ -1,112 +1,48 @@
-import '../assets/css/Content.css';
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import io from 'socket.io-client';
+import '../assets/css/Content.css';
 
 const Content = () => {
+    // State for tasks, titles, and editing tasks
     const [tasks, setTasks] = useState([]);
     const [title, setTitle] = useState("");
-    const [editingTitle, setEditingTitle] = useState({}); // Local state for editing
+    const [editingTitle, setEditingTitle] = useState({});
 
-    const handleInputChange = (id, newTitle) => {
-        setEditingTitle({
-            ...editingTitle,
-            [id]: newTitle
-        });
-    };
-
-    const handleInputBlur = (id) => {
-        if (editingTitle[id]) {
-            handleEditTask(id, editingTitle[id]);
-        } else {
-            // If the title is empty, revert to the original title (or handle this as you see fit)
-            setEditingTitle(prevEditing => {
-                const updatedEditing = { ...prevEditing };
-                delete updatedEditing[id];  // Removing the key so that it doesn't override the original task title
-                return updatedEditing;
-            });
-        }
-    };
-    
+    // Base URL for API requests
     const baseURL = window.location.hostname === 'localhost' 
         ? 'http://localhost:8000' 
         : `http://${window.location.hostname}:8000`;
 
     useEffect(() => {
-        axios.get(`${baseURL}/api/tasks/`).then((response) => {
-            setTasks(response.data);
-        });
-    }, []);
-
-    const fetchTasks = () => {
-        axios.get(`${baseURL}/api/tasks/`).then(response => {
-            setTasks(response.data);
-        });
-    };
-
-    useEffect(() => {
-        const baseURL = window.location.hostname === 'localhost' 
-            ? 'ws://localhost:8000' 
-            : `ws://${window.location.hostname}:8000`;
-
-        const ws = new WebSocket(`${baseURL}/ws/tasks/`);
-
-        ws.onmessage = (event) => {
-            const data = JSON.parse(event.data);
-            if (data.type === "new_task") {
-                setTasks(prevTasks => [...prevTasks, data.task]);
-            }
-
-            const eventType = data.event_type;
-
-            switch (eventType) {
-                case 'task_created':
-                case 'task_updated':
-                case 'task_deleted':
-                    fetchTasks();
-                    break;
-                default:
-                    console.log("Unsupported event type:", eventType);
-            }
+        const fetchTasks = () => {
+            axios.get(`${baseURL}/api/tasks/`).then((response) => {
+                setTasks(response.data);
+            });
         };
 
-        ws.onerror = (error) => {
-            console.error("WebSocket Error:", error);
-        };
+        fetchTasks();
 
-        ws.onclose = (event) => {
-            if (event.wasClean) {
-                console.log(`Connection closed cleanly, code=${event.code}, reason=${event.reason}`);
-            } else {
-                console.error('Connection died');
-            }
-        };
+        // Setting up polling: Fetch tasks every 3 seconds
+        const interval = setInterval(fetchTasks, 3000);
 
-        return () => {
-            ws.close();
-        };
-    }, []);
+        // Clear interval on component unmount
+        return () => clearInterval(interval);
+    }, [baseURL]);
 
-
+    // CRUD operations for tasks
     const handleAddTask = () => {
-        axios
-            .post(`${baseURL}/api/tasks/`, {
-                title: title,
-                completed: false,
-            })
+        axios.post(`${baseURL}/api/tasks/`, { title: title, completed: false })
             .then((response) => {
                 setTasks([...tasks, response.data]);
                 setTitle("");
             });
     };
-    
 
     const handleDeleteTask = (id) => {
         axios.delete(`${baseURL}/api/tasks/${id}/`).then(() => {
             setTasks(tasks.filter(task => task.id !== id));
         });
     };
-    
 
     const handleEditTask = (id, newTitle) => {
         const updatedTask = tasks.find(task => task.id === id);
@@ -118,7 +54,6 @@ const Content = () => {
         });
     };
 
-
     const toggleTaskStatus = (id) => {
         const taskToUpdate = tasks.find(task => task.id === id);
         taskToUpdate.completed = !taskToUpdate.completed;
@@ -129,19 +64,26 @@ const Content = () => {
         });
     };
 
+    // Handling the editing state
+    const handleInputChange = (id, newTitle) => {
+        setEditingTitle({
+            ...editingTitle,
+            [id]: newTitle
+        });
+    };
 
-    // When making changes to tasks (like adding, editing, or deleting), emit a WebSocket event from the client. 
-    // Then, in your Django consumer, when that event is received, broadcast it to all connected clients.
-    const socket = io(`ws://${baseURL}`);
-    socket.on('connect', () => {
-        console.log('Connected to the WebSocket server');
-    });
-
-    // Listen for real-time updates
-    socket.on('task_updated', (data) => {
-        // Update your tasks state based on the data received
-    });
-
+    const handleInputBlur = (id) => {
+        if (editingTitle[id]) {
+            handleEditTask(id, editingTitle[id]);
+        } else {
+            setEditingTitle(prevEditing => {
+                const updatedEditing = { ...prevEditing };
+                delete updatedEditing[id];
+                return updatedEditing;
+            });
+        }
+    };
+    
     return (
         <div className="content">
             <div className="input-group">
@@ -164,7 +106,7 @@ const Content = () => {
                             onChange={(e) => handleInputChange(task.id, e.target.value)}
                             onBlur={() => handleInputBlur(task.id)}
                         />
-                        <span onClick={() => toggleTaskStatus(task.id)} className={ task.completed ? "text-green" : "text-red" }>
+                        <span onClick={() => toggleTaskStatus(task.id)} className={task.completed ? "text-green" : "text-red"}>
                             {task.completed ? "(Done)" : "(Pending)"}
                         </span>
                         <button onClick={() => handleDeleteTask(task.id)}>Delete</button>
@@ -176,4 +118,3 @@ const Content = () => {
 };
 
 export default Content;
-
