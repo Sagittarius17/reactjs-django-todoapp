@@ -9,9 +9,7 @@ const Content = () => {
     const [editingTitle, setEditingTitle] = useState({});
 
     // Base URL for API requests
-    const baseURL = window.location.hostname === 'localhost' 
-        ? 'http://localhost:8000' 
-        : `http://${window.location.hostname}:8000`;
+    const baseURL = window.location.hostname === 'localhost' ? 'http://localhost:8000' : `http://${window.location.hostname}:8000`;
 
     useEffect(() => {
         const fetchTasks = () => {
@@ -22,8 +20,8 @@ const Content = () => {
 
         fetchTasks();
 
-        // Setting up polling: Fetch tasks every 3 seconds
-        const interval = setInterval(fetchTasks, 3000);
+        // Setting up polling: Fetch tasks every 5 seconds
+        const interval = setInterval(fetchTasks, 5000);
 
         // Clear interval on component unmount
         return () => clearInterval(interval);
