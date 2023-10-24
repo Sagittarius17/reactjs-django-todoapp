@@ -4,7 +4,7 @@ from .models import Task
 class TaskSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
-        fields = ('id', 'title', 'completed')
+        fields = ('id', 'title', 'completed', 'order')
         
     def validate_title(self, value):
         if not value.strip():  # Check if the title is an empty string or just whitespace
