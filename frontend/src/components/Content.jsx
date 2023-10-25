@@ -82,6 +82,42 @@ const Content = () => {
         }
     };
     
+    let draggedItem = null;
+
+    const handleDragStart = (e, position) => {
+        draggedItem = position;
+        setTimeout(() => {
+            e.target.style.display = 'none';
+        }, 0);
+    }
+
+    const handleDragEnd = (e) => {
+        e.target.style.display = '';
+    }
+
+    const handleDragOver = (e) => {
+        e.preventDefault();
+    }
+
+    const handleDrop = (e, position) => {
+        e.preventDefault();
+
+        // Move the item
+        const newList = [...tasks];
+        const [removedItem] = newList.splice(draggedItem, 1);
+        newList.splice(position, 0, removedItem);
+
+        setTasks(newList);
+
+        // Update backend with new order
+        newList.forEach((task, index) => {
+            axios.put(`${baseURL}/api/tasks/${task.id}/`, {
+                ...task,
+                order: index
+            });
+        });
+    }
+
     return (
         <div className="content">
             <div className="input-group">
@@ -96,8 +132,12 @@ const Content = () => {
             </div>
 
             <ul className="task-list">
-                {tasks.map((task) => (
-                    <li key={task.id} className="p-2 bg-gray-500 border rounded-md flex justify-between items-center">
+                {tasks.map((task, idx) => (
+                    <li key={task.id} draggable="true"
+                    className="p-2 bg-gray-500 border rounded-md flex justify-between items-center"
+                    onDragStart={(e) => handleDragStart(e, idx)} onDragEnd={handleDragEnd} onDragOver={handleDragOver}
+                    onDrop={(e) => handleDrop(e, idx)}
+                    >
                         <input
                             type="text"
                             value={editingTitle[task.id] !== undefined ? editingTitle[task.id] : task.title}
