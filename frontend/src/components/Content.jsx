@@ -29,11 +29,15 @@ const Content = () => {
 
     // CRUD operations for tasks
     const handleAddTask = () => {
-        axios.post(`${baseURL}/api/tasks/`, { title: title, completed: false })
-            .then((response) => {
-                setTasks([...tasks, response.data]);
-                setTitle("");
-            });
+        axios.post(`${baseURL}/api/tasks/`, { 
+            title: title, 
+            completed: false, 
+            order: tasks.length 
+        })
+        .then((response) => {
+            setTasks([...tasks, response.data]);
+            setTitle("");
+        });
     };
 
     const handleDeleteTask = (id) => {
@@ -133,11 +137,21 @@ const Content = () => {
 
             <ul className="task-list">
                 {tasks.map((task, idx) => (
-                    <li key={task.id} draggable="true"
-                    className="p-2 bg-gray-500 border rounded-md flex justify-between items-center"
-                    onDragStart={(e) => handleDragStart(e, idx)} onDragEnd={handleDragEnd} onDragOver={handleDragOver}
-                    onDrop={(e) => handleDrop(e, idx)}
-                    >
+                    <li key={task.id}
+                        className="p-2 bg-gray-500 border rounded-md flex justify-between items-center">
+                        
+                        {/* Drag Handle */}
+                        <div 
+                            draggable="true"
+                            onDragStart={(e) => handleDragStart(e, idx)} 
+                            onDragEnd={handleDragEnd} 
+                            onDragOver={handleDragOver}
+                            onDrop={(e) => handleDrop(e, idx)}
+                            className="cursor-move mr-2"  // `cursor-move` makes it look like a draggable item
+                        >
+                            <span> ||| </span>  {/* This is just a sample icon; you can use any other symbol or icon */}
+                        </div>
+
                         <input
                             type="text"
                             value={editingTitle[task.id] !== undefined ? editingTitle[task.id] : task.title}
@@ -151,6 +165,7 @@ const Content = () => {
                     </li>
                 ))}
             </ul>
+
         </div>
     );
 };
