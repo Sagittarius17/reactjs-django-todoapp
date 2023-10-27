@@ -21,15 +21,15 @@ const Content = () => {
         fetchTasks();
 
         // Setting up polling: Fetch tasks every 5 seconds
-        const interval = setInterval(fetchTasks, 5000);
+        // const interval = setInterval(fetchTasks, 5000);
 
         // Clear interval on component unmount
-        return () => clearInterval(interval);
+        // return () => clearInterval(interval);
     }, [baseURL]);
 
     // CRUD operations for tasks
     const handleAddTask = () => {
-        axios.post(`${baseURL}/api/tasks/`, { 
+        axios.post(`${baseURL}/api/tasks/add/`, { 
             title: title, 
             completed: false, 
             order: tasks.length 
@@ -41,7 +41,7 @@ const Content = () => {
     };
 
     const handleDeleteTask = (id) => {
-        axios.delete(`${baseURL}/api/tasks/${id}/`).then(() => {
+        axios.delete(`${baseURL}/api/tasks/delete/${id}/`).then(() => {
             setTasks(tasks.filter(task => task.id !== id));
         });
     };
@@ -50,7 +50,7 @@ const Content = () => {
         const updatedTask = tasks.find(task => task.id === id);
         updatedTask.title = newTitle;
     
-        axios.put(`${baseURL}/api/tasks/${id}/`, updatedTask).then(response => {
+        axios.put(`${baseURL}/api/tasks/edit/${id}/`, updatedTask).then(response => {
             const updatedTasks = tasks.map(task => task.id === id ? response.data : task);
             setTasks(updatedTasks);
         });
@@ -165,7 +165,6 @@ const Content = () => {
                     </li>
                 ))}
             </ul>
-
         </div>
     );
 };
