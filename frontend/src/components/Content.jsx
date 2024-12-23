@@ -19,12 +19,6 @@ const Content = () => {
         };
 
         fetchTasks();
-
-        // Setting up polling: Fetch tasks every 5 seconds
-        // const interval = setInterval(fetchTasks, 5000);
-
-        // Clear interval on component unmount
-        // return () => clearInterval(interval);
     }, [baseURL]);
 
     // CRUD operations for tasks

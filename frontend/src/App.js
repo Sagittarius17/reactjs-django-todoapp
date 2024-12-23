@@ -1,5 +1,7 @@
 import './App.css';
-import { Navbar, Content, Footer } from './components'
+import Navbar from './components/Navbar';
+import Content from './components/Content';
+import Footer from './components/Footer';
 
 const App = () => {
     return (
